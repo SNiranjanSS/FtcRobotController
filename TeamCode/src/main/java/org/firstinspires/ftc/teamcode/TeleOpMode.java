@@ -99,7 +99,7 @@ public class TeleOpMode extends LinearOpMode {
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        
+
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setTargetPosition(0);
 
@@ -137,8 +137,8 @@ public class TeleOpMode extends LinearOpMode {
                 positionElbow = MAX_POS_ELBOW;
             } else if (gamepad2.dpad_down) {
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetPickUp);
-                MAX_POS_ELBOW = 0.6;
-                MIN_POS_ELBOW = 0.3;
+                MAX_POS_ELBOW = 0.7;
+                MIN_POS_ELBOW = 0.5;
                 positionElbow = MAX_POS_ELBOW;
             } else if (gamepad2.a) {
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM);
