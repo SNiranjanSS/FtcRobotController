@@ -33,9 +33,9 @@ public class ConceptArm extends LinearOpMode {
 
 
         // Define the target positions in encoder counts
-        double targetRotationLowBasket = 0.4; // Set appropriately
-        double targetRotationSpecimen = 0.45;  // Set appropriately
-        double targetPickUp = 0.72;            // Set appropriately
+        double targetHighBasket = 0.35; // Set appropriately
+        double targetRotationSpecimen = 0.4;  // Set appropriately
+        double targetPickUp = 0.66;            // Set appropriately
         double targetZero = 0;
         double targetEnter = 0.6;
 
@@ -43,7 +43,7 @@ public class ConceptArm extends LinearOpMode {
         while (opModeIsActive()) {
             // Check which button is pressed and set the target position
             if (gamepad2.dpad_left) {
-                targetPosition = (int) (COUNTS_PER_MOTOR_REV * targetRotationLowBasket);
+                targetPosition = (int) (COUNTS_PER_MOTOR_REV * targetHighBasket);
             } else if (gamepad2.dpad_up) {
                 targetPosition = (int) (COUNTS_PER_MOTOR_REV * targetRotationSpecimen);
             } else if (gamepad2.dpad_down) {

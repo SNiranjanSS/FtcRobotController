@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /*
@@ -66,13 +67,13 @@ public class TeleOpMode extends LinearOpMode {
     int targetPositionSlide = 0; // To store the current position for arm
 
     // For elbow joint
-    static final double INCREMENT   = 0.001;     // amount to slew servo each CYCLE_MS cycle
-    static final double MAX_POS_ELBOW =  1;     // Maximum rotational position
-    static final double MIN_POS_ELBOW =  0;       // Minimum rotational position
-    double positionElbow = (MAX_POS_ELBOW - MIN_POS_ELBOW) / 2; // Start at halfway position
+    static final double INCREMENT_ELBOW = 0.03;     // amount to slew servo each CYCLE_MS cycle
+    static double MAX_POS_ELBOW =  1;     // Maximum rotational position
+    static double MIN_POS_ELBOW =  0;       // Minimum rotational position
+    double positionElbow = 0; // Start at minimum position
 
     // For claw
-    static final double MAX_POS_CLAW     =  0.7;     // Maximum rotational position
+    static final double MAX_POS_CLAW     =  0.6;     // Maximum rotational position
     static final double MIN_POS_CLAW     =  0.4;       // Minimum rotational position
     double positionClaw = MIN_POS_CLAW; // Start at min
 
@@ -94,92 +95,114 @@ public class TeleOpMode extends LinearOpMode {
 
         // setup arm
         // Set arm direction, mode, and behavior
-        arm.setDirection(DcMotor.Direction.FORWARD); // Adjust this as needed
+        arm.setDirection(DcMotor.Direction.REVERSE); // Adjust this as needed
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setTargetPosition(0);
 
         // Set slide direction, mode, and behavior
-        slide.setDirection(DcMotor.Direction.FORWARD); // Adjust this as needed
+        slide.setDirection(DcMotor.Direction.REVERSE); // Adjust this as needed
         slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slide.setTargetPosition(0);
 
         // Define the target positions in encoder counts for arm and slide
-        double targetRotationLowBasket = 0.4; // Set appropriately
-        double targetRotationSpecimen = 0.45;  // Set appropriately
-        double targetPickUp = 0.72;            // Set appropriately
-        double targetZero = 0;
-        double targetEnter = 0.6;
-        double targetExtend = 0.6;  // Set as needed
+        final double targetHighBasket = 0.35; // Set appropriately
+        final double targetRotationSpecimen = 0.4;  // Set appropriately
+        final double targetPickUp = 0.6;            // Set appropriately
+        final double targetZeroARM = 0;
+        final double targetZeroSLIDE = 0;
+        //double targetEnter = 0.6;
+        final double targetExtend = 0.6;  // Set as needed
 
         while (opModeIsActive()) {
             // move mecanum wheels
             mecanumWheels.move();
 
             // Check which button is pressed and set the target position of arm
-            if (gamepad2.dpad_left) {
-                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetRotationLowBasket);
-            } else if (gamepad2.dpad_up) {
+            if (gamepad2.dpad_up) {
+                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetHighBasket);
+                MAX_POS_ELBOW = 0.6;
+                MIN_POS_ELBOW = 0.5;
+                positionElbow = MAX_POS_ELBOW;
+            } else if (gamepad2.dpad_left) {
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetRotationSpecimen);
+                MAX_POS_ELBOW = 0.6;
+                MIN_POS_ELBOW = 0.35;
+                positionElbow = MAX_POS_ELBOW;
             } else if (gamepad2.dpad_down) {
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetPickUp);
+                MAX_POS_ELBOW = 0.6;
+                MIN_POS_ELBOW = 0.3;
+                positionElbow = MAX_POS_ELBOW;
             } else if (gamepad2.a) {
-                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZero);
-            } else if (gamepad2.dpad_right) {
-                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetEnter);
+                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM);
+                MAX_POS_ELBOW = 1;
+                MIN_POS_ELBOW = 0;
+                positionElbow = MIN_POS_ELBOW;
             }
+//           else if (gamepad2.dpad_right) {
+//                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetEnter);
+//            }
 
             // Check which button is pressed and set the target position for slide
             if (gamepad2.left_bumper){
-                targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZero);
+                targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
             } else if (gamepad2.right_bumper){
                 targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetExtend);
             }
 
-            // Check if the arm is not moving or the target position has changed
-            if (!arm.isBusy() || arm.getTargetPosition() != targetPositionArm) {
+            // Check if the target position has changed
+            if (arm.getTargetPosition() != targetPositionArm) {
                 arm.setTargetPosition(targetPositionArm);
                 arm.setPower(1); // Move to the target position
             }
 
             // Stop the arm once it has reached the target position
-            if (!arm.isBusy()) {
-                arm.setPower(0.2); // Stop the motor
+            if (!arm.isBusy()){
+                if(targetPositionArm == (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM)){
+                    arm.setPower(0);
+                }else {
+                    arm.setPower(0.3); // Stop the motor
+                }
             }
 
-            // Check if the slide is not moving or the target position has changed
-            if (!slide.isBusy() || slide.getTargetPosition() != targetPositionSlide) {
+            // Check if the target position has changed
+            if (slide.getTargetPosition() != targetPositionSlide) {
                 slide.setTargetPosition(targetPositionSlide);
                 slide.setPower(1); // Move to the target position
             }
 
             // Stop the motor once it has reached the target position
+            //change positions so you dont use targetZero for slide and arm
             if (!slide.isBusy()) {
-                slide.setPower(0.2); // Stop the motor
+                if(targetPositionSlide == (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE)){
+                    slide.setPower(0);//let the motor rest in its base position
+                }else {
+                    slide.setPower(0.3); // Stop the motor
+                }
             }
 
             // slew the slide, according to the control.
-            if (gamepad2.right_stick_x > 0.05) {
+            if (gamepad2.right_stick_x > 0.5) {
                 // Keep stepping up until we hit the max value.
-                positionElbow += INCREMENT ;
+                positionElbow += INCREMENT_ELBOW;
                 if (positionElbow >= MAX_POS_ELBOW) {
                     positionElbow = MAX_POS_ELBOW;
                 }
             }
             else if (gamepad2.right_stick_x < -0.05){
                 // Keep stepping down until we hit the min value.
-                positionElbow -= INCREMENT ;
+                positionElbow -= INCREMENT_ELBOW;
                 if (positionElbow <= MIN_POS_ELBOW) {
                     positionElbow = MIN_POS_ELBOW;
                 }
             }
-            else if (gamepad2.right_stick_button) {
-                positionElbow = (MAX_POS_ELBOW - MIN_POS_ELBOW)/2;
-            }
-
             // slew the claw, according to the position variable.
             if (gamepad2.x) {
                 // set claw to the position where it is out

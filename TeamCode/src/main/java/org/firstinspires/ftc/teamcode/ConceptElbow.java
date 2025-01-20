@@ -51,8 +51,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ConceptElbow extends LinearOpMode {
 
     static final double INCREMENT   = 0.001;     // amount to slew servo each CYCLE_MS cycle
-    static final double MAX_POS     =  0.6;     // Maximum rotational position
-    static final double MIN_POS     =  0.3;       // Minimum rotational position
+    static final double MAX_POS     =  1;     // Maximum rotational position
+    static final double MIN_POS     =  0;       // Minimum rotational position
 
     // Define class members
     Servo EL;
