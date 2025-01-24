@@ -64,7 +64,7 @@ public class TeleOpMode extends LinearOpMode {
     static final double COUNTS_PER_MOTOR_REV312 = 3895.9; // setting for 43 RPM motor
     static final int CYCLE_MS = 50; // period of each cycle, set to 50 milliseconds
     int targetPositionArm = 0; // To store the current target position for arm
-    int targetPositionSlide = 0; // To store the current position for arm
+    int targetPositionSlide = 0; // To store the current position for slide
 
     // For elbow joint
     static final double INCREMENT_ELBOW = 0.03;     // amount to slew servo each CYCLE_MS cycle
@@ -112,8 +112,7 @@ public class TeleOpMode extends LinearOpMode {
         slide.setTargetPosition(0);
 
         // Define the target positions in encoder counts for arm and slide
-        final double targetHighBasket = 0.35; // Set appropriately
-        final double targetRotationSpecimen = 0.4;  // Set appropriately
+        final double targetScore = 0.35; // Set appropriately
         final double targetPickUp = 0.6;            // Set appropriately
         final double targetZeroARM = 0;
         final double targetZeroSLIDE = 0;
@@ -126,37 +125,33 @@ public class TeleOpMode extends LinearOpMode {
 
             // Check which button is pressed and set the target position of arm
             if (gamepad2.dpad_up) {
-                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetHighBasket);
+                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetScore);
                 MAX_POS_ELBOW = 0.6;
-                MIN_POS_ELBOW = 0.5;
+                MIN_POS_ELBOW = 0.3;
                 positionElbow = MAX_POS_ELBOW;
             } else if (gamepad2.dpad_left) {
-                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetRotationSpecimen);
-                MAX_POS_ELBOW = 0.6;
-                MIN_POS_ELBOW = 0.35;
-                positionElbow = MAX_POS_ELBOW;
-            } else if (gamepad2.dpad_down) {
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetPickUp);
                 MAX_POS_ELBOW = 0.7;
                 MIN_POS_ELBOW = 0.5;
                 positionElbow = MAX_POS_ELBOW;
-            } else if (gamepad2.a) {
+            } else if (gamepad2.dpad_right) {
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM);
                 MAX_POS_ELBOW = 1;
                 MIN_POS_ELBOW = 0;
-                positionElbow = MIN_POS_ELBOW;
+                positionElbow = (MIN_POS_ELBOW + MAX_POS_ELBOW)/2;
             }
 //           else if (gamepad2.dpad_right) {
 //                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetEnter);
 //            }
 
-            // Check which button is pressed and set the target position for slide
-            if (gamepad2.left_bumper){
-                targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
-            } else if (gamepad2.right_bumper){
-                targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetExtend);
+            // moves slide in/out
+            if (gamepad1.a && !slide.isBusy()) {
+                if (targetPositionSlide == targetZeroSLIDE) {
+                    targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetExtend);
+                } else if (targetPositionSlide == targetExtend){
+                    targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
+                }
             }
-
             // Check if the target position has changed
             if (arm.getTargetPosition() != targetPositionArm) {
                 arm.setTargetPosition(targetPositionArm);
@@ -189,28 +184,28 @@ public class TeleOpMode extends LinearOpMode {
             }
 
             // slew the slide, according to the control.
-            if (gamepad2.right_stick_x > 0.5) {
+            if (gamepad2.right_stick_y > 0.5) {
                 // Keep stepping up until we hit the max value.
                 positionElbow += INCREMENT_ELBOW;
                 if (positionElbow >= MAX_POS_ELBOW) {
                     positionElbow = MAX_POS_ELBOW;
                 }
             }
-            else if (gamepad2.right_stick_x < -0.05){
+            else if (gamepad2.right_stick_y < -0.05){
                 // Keep stepping down until we hit the min value.
                 positionElbow -= INCREMENT_ELBOW;
                 if (positionElbow <= MIN_POS_ELBOW) {
                     positionElbow = MIN_POS_ELBOW;
                 }
             }
+
             // slew the claw, according to the position variable.
-            if (gamepad2.x) {
-                // set claw to the position where it is out
-                positionClaw = MAX_POS_CLAW;
-            }
-            else if (gamepad2.b){
-                // set claw to the position where it is in
-                positionClaw = MIN_POS_CLAW;
+            if (gamepad1.b && (claw.getPosition() == positionClaw)) {
+                if (positionClaw == MIN_POS_CLAW) {
+                    positionClaw = MAX_POS_CLAW;
+                } else if (positionClaw == MAX_POS_CLAW) {
+                    positionClaw = MIN_POS_CLAW;
+                }
             }
 
             // Set the elbow and claw to the new position and pause;
