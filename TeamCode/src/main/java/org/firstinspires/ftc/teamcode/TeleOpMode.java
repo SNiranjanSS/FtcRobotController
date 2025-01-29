@@ -61,7 +61,7 @@ public class TeleOpMode extends LinearOpMode {
 
     // for arm and slide
     static final double COUNTS_PER_MOTOR_REV43 = 3895.9; // setting for 43 RPM motor
-    static final double COUNTS_PER_MOTOR_REV312 = 3895.9; // setting for 43 RPM motor
+    static final double COUNTS_PER_MOTOR_REV312 = 3895.9; // setting for 312 RPM motor
     static final int CYCLE_MS = 50; // period of each cycle, set to 50 milliseconds
     int targetPositionArm = 0; // To store the current target position for arm
     int targetPositionSlide = 0; // To store the current position for slide
@@ -112,8 +112,8 @@ public class TeleOpMode extends LinearOpMode {
         slide.setTargetPosition(0);
 
         // Define the target positions in encoder counts for arm and slide
-        final double targetScore = 0.35; // Set appropriately
-        final double targetPickUp = 0.6;            // Set appropriately
+        final double targetScore = 0.4; // Set appropriately
+        final double targetPickUp = 0.625;            // Set appropriately
         final double targetZeroARM = 0;
         final double targetZeroSLIDE = 0;
         //double targetEnter = 0.6;
@@ -125,37 +125,37 @@ public class TeleOpMode extends LinearOpMode {
 
             // Check which button is pressed and set the target position of arm
             if (gamepad2.dpad_up) {
-                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetScore);
-                MAX_POS_ELBOW = 0.6;
+                MAX_POS_ELBOW = 0.7;
                 MIN_POS_ELBOW = 0.3;
                 positionElbow = MAX_POS_ELBOW;
+                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetScore);
+                targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
             } else if (gamepad2.dpad_left) {
-                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetPickUp);
                 MAX_POS_ELBOW = 0.7;
-                MIN_POS_ELBOW = 0.5;
+                MIN_POS_ELBOW = 0.4;
                 positionElbow = MAX_POS_ELBOW;
-            } else if (gamepad2.dpad_right) {
-                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM);
-                MAX_POS_ELBOW = 1;
+                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetPickUp);
+            } else if (gamepad2.a) {
                 MIN_POS_ELBOW = 0;
-                positionElbow = (MIN_POS_ELBOW + MAX_POS_ELBOW)/2;
+                positionElbow = 0.15;
+                MAX_POS_ELBOW = 1;
+                targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
+                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM);
             }
 //           else if (gamepad2.dpad_right) {
 //                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetEnter);
 //            }
 
-            // moves slide in/out
-            if (gamepad1.a && !slide.isBusy()) {
-                if (targetPositionSlide == targetZeroSLIDE) {
-                    targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetExtend);
-                } else if (targetPositionSlide == targetExtend){
-                    targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
-                }
+            // Check which button is pressed and set the target position for slide
+            if (gamepad2.left_bumper){
+                targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
+            } else if (gamepad2.right_bumper) {
+                targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetExtend);
             }
             // Check if the target position has changed
             if (arm.getTargetPosition() != targetPositionArm) {
                 arm.setTargetPosition(targetPositionArm);
-                arm.setPower(1); // Move to the target position
+                arm.setPower(0.8); // Move to the target position
             }
 
             // Stop the arm once it has reached the target position
@@ -184,7 +184,7 @@ public class TeleOpMode extends LinearOpMode {
             }
 
             // slew the slide, according to the control.
-            if (gamepad2.right_stick_y > 0.5) {
+            if (gamepad2.right_stick_y > 0.05) {
                 // Keep stepping up until we hit the max value.
                 positionElbow += INCREMENT_ELBOW;
                 if (positionElbow >= MAX_POS_ELBOW) {
@@ -200,15 +200,16 @@ public class TeleOpMode extends LinearOpMode {
             }
 
             // slew the claw, according to the position variable.
-            if (gamepad1.b && (claw.getPosition() == positionClaw)) {
+            if (gamepad2.b && (claw.getPosition() == positionClaw)) {
                 if (positionClaw == MIN_POS_CLAW) {
                     positionClaw = MAX_POS_CLAW;
-                } else if (positionClaw == MAX_POS_CLAW) {
+                }
+            } else if (gamepad2.x && (claw.getPosition() == positionClaw)) {
+                if (positionClaw == MAX_POS_CLAW) {
                     positionClaw = MIN_POS_CLAW;
                 }
             }
-
-            // Set the elbow and claw to the new position and pause;
+                // Set the elbow and claw to the new position and pause;
             elbow.setPosition(positionElbow);
             claw.setPosition(positionClaw);
 
