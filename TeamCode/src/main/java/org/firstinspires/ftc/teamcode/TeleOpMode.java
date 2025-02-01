@@ -131,7 +131,7 @@ public class TeleOpMode extends LinearOpMode {
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetScore);
                 targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
             } else if (gamepad2.dpad_left) {
-                MAX_POS_ELBOW = 0.7;
+                MAX_POS_ELBOW = 0.75;
                 MIN_POS_ELBOW = 0.4;
                 positionElbow = MAX_POS_ELBOW;
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetPickUp);
