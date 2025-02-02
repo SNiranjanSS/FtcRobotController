@@ -1,15 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
-
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.util.Timing;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -18,7 +14,7 @@ import org.firstinspires.ftc.teamcode.roadrunning.MecanumDrive;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class SpecimenAuto extends LinearOpMode{
+public class AscentAuto extends LinearOpMode{
     private MecanumDrive drive;
     DcMotor arm; // motor for arm
     DcMotor slide; // motor for slide
@@ -100,15 +96,23 @@ public class SpecimenAuto extends LinearOpMode{
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
         claw.setPosition(0.6);
 
+        // ascent
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.3,0),0));
-        sleepTools(1000);
+        sleepTools(500);
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
         arm.setTargetPosition(0);
         elbow.setPosition(0.1);
         sleepTools(1000);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.3,0.4),0));
-        sleepTools(3000);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,-0.3),0));
+        sleepTools(1500);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.3 ,0),0));
+        sleepTools(1500);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0 ,0),-90));
+        elbow.setPosition(0.7);
+        arm.setTargetPosition((int) (COUNTS_PER_MOTOR_REV43 * targetScore));
+        arm.setPower(0.7);
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.3 ,0),0));
+        sleepTools(1500);
 
     }
 }

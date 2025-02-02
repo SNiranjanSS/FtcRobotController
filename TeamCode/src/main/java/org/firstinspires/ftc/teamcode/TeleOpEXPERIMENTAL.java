@@ -32,7 +32,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /*
@@ -49,8 +48,8 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
-@TeleOp(name = "Teleop Mode", group = "Concept")
-public class TeleOpMode extends LinearOpMode {
+@TeleOp(name = "EXPERIMENTAL TELEOP", group = "Concept")
+public class TeleOpEXPERIMENTAL extends LinearOpMode {
 
     private MecanumWheels mecanumWheels;    // for mecanumWheels
 
@@ -139,6 +138,17 @@ public class TeleOpMode extends LinearOpMode {
                 positionElbow = 0.15;
                 MAX_POS_ELBOW = 1;
                 targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
+                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM);
+            } else if (gamepad1.right_bumper) {
+                MIN_POS_ELBOW = 0;
+                positionElbow = 0.15;
+                MAX_POS_ELBOW = 1;
+                targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetScore) * (-1);
+                arm.setDirection(DcMotor.Direction.REVERSE); // Adjust this as needed
+                arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM);
             }
 //           else if (gamepad2.dpad_right) {
