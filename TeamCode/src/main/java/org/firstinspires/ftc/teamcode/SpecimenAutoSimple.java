@@ -1,15 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
-
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.util.Timing;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -18,7 +14,7 @@ import org.firstinspires.ftc.teamcode.roadrunning.MecanumDrive;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class SpecimenAuto extends LinearOpMode{
+public class SpecimenAutoSimple extends LinearOpMode{
     private MecanumDrive drive;
     DcMotor arm; // motor for arm
     DcMotor slide; // motor for slide
@@ -87,34 +83,44 @@ public class SpecimenAuto extends LinearOpMode{
 
         // put in specimen
         waitForStart();
+        // move back 0.5 secs
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.2,0),0));
         sleepTools(500);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
-        arm.setTargetPosition((int) (COUNTS_PER_MOTOR_REV43 * targetScore));
-        arm.setPower(0.7);
-        slide.setTargetPosition(0);
-        elbow.setPosition(0.42);
-        sleepTools(1000);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.2,0),0));
-        sleepTools(2500);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
-        claw.setPosition(0.6);
 
+        // stop robot to lift arm
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+        sleepTools(2000);
+        arm.setTargetPosition((int) (COUNTS_PER_MOTOR_REV43 * targetScore));
+        arm.setPower(0.7); // hold
+        sleepTools(2000);
+        slide.setTargetPosition(0);
+        elbow.setPosition(0.3); // hold down
+        sleepTools(2000);
+
+        // push back and clip
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.2,0),0));
+        sleepTools(1200);
+        elbow.setPosition(0.5); //  raise elbow
+        sleepTools(1300);
+
+        // open claw
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+        claw.setPosition(0.6); // open claw
+        sleepTools(2000);
+
+        // move back
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.28,0),0));
         sleepTools(1000);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
-        arm.setTargetPosition(0);
-        elbow.setPosition(0.1);
-        sleepTools(1000);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,-0.4),0));
-        sleepTools(2500);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.32,0),-0.02));
-        sleepTools(2500);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,-0.35),-0.5));
-        sleepTools(2500);
-        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.23,0),0));
-        sleepTools(2500);
-       // drive.setDrivePowers(new PoseVelocity2d(new Vector2d()));
 
+        // stop to reset arm
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
+        sleepTools(2000);
+        arm.setTargetPosition(0); // base pos
+        elbow.setPosition(0.1); // safe elbow pos
+        sleepTools(2000);
+
+        // move to observation zone
+        drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0.5),0));
+        sleepTools(3000);
     }
 }

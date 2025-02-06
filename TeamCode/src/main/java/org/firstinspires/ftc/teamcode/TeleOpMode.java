@@ -116,7 +116,7 @@ public class TeleOpMode extends LinearOpMode {
         final double targetZeroARM = 0;
         final double targetZeroSLIDE = 0;
         //double targetEnter = 0.6;
-        final double targetExtend = 0.6;  // Set as needed
+        double targetExtend = 0.6;  // Set as needed
 
         while (opModeIsActive()) {
             // move mecanum wheels
@@ -127,17 +127,20 @@ public class TeleOpMode extends LinearOpMode {
                 MAX_POS_ELBOW = 0.7;
                 MIN_POS_ELBOW = 0.3;
                 positionElbow = MAX_POS_ELBOW;
+                targetExtend = 0.6;
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetScore);
                 targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
             } else if (gamepad2.dpad_left) {
                 MAX_POS_ELBOW = 0.75;
                 MIN_POS_ELBOW = 0.4;
                 positionElbow = MAX_POS_ELBOW;
+                targetExtend = 0.15;
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetPickUp);
             } else if (gamepad2.a) {
                 MIN_POS_ELBOW = 0;
                 positionElbow = 0.15;
                 MAX_POS_ELBOW = 1;
+                targetExtend = 0.6;
                 targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM);
             }
