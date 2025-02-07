@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.roadrunning.MecanumDrive;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous
-public class SpecimenAutoSimple extends LinearOpMode{
+public class  SpecimenAutoSimple extends LinearOpMode{
     private MecanumDrive drive;
     DcMotor arm; // motor for arm
     DcMotor slide; // motor for slide
@@ -94,18 +94,18 @@ public class SpecimenAutoSimple extends LinearOpMode{
         arm.setPower(0.7); // hold
         sleepTools(2000);
         slide.setTargetPosition(0);
-        elbow.setPosition(0.3); // hold down
+        elbow.setPosition(0.25); // hold down
         sleepTools(2000);
 
         // push back and clip
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-0.2,0),0));
         sleepTools(1200);
-        elbow.setPosition(0.5); //  raise elbow
+        elbow.setPosition(0.45); //  raise elbow
         sleepTools(1300);
 
         // open claw
         drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),0));
-        claw.setPosition(0.6); // open claw
+        claw.setPosition(0.5); // open claw
         sleepTools(2000);
 
         // move back

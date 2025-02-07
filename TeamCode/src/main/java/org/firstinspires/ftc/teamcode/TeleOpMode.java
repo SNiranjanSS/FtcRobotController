@@ -124,22 +124,22 @@ public class TeleOpMode extends LinearOpMode {
 
             // Check which button is pressed and set the target position of arm
             if (gamepad2.dpad_up) {
-                MAX_POS_ELBOW = 0.7;
-                MIN_POS_ELBOW = 0.3;
+                MAX_POS_ELBOW = 0.6;
+                MIN_POS_ELBOW = 0.25;
                 positionElbow = MAX_POS_ELBOW;
                 targetExtend = 0.6;
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetScore);
                 targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
             } else if (gamepad2.dpad_left) {
-                MAX_POS_ELBOW = 0.75;
-                MIN_POS_ELBOW = 0.4;
+                MAX_POS_ELBOW = 0.65;
+                MIN_POS_ELBOW = 0.35;
                 positionElbow = MAX_POS_ELBOW;
                 targetExtend = 0.15;
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetPickUp);
             } else if (gamepad2.a) {
                 MIN_POS_ELBOW = 0;
                 positionElbow = 0.15;
-                MAX_POS_ELBOW = 1;
+                MAX_POS_ELBOW = 0.7;
                 targetExtend = 0.6;
                 targetPositionSlide = (int) (COUNTS_PER_MOTOR_REV312 * targetZeroSLIDE);
                 targetPositionArm = (int) (COUNTS_PER_MOTOR_REV43 * targetZeroARM);
@@ -212,7 +212,7 @@ public class TeleOpMode extends LinearOpMode {
                 }
             }
                 // Set the elbow and claw to the new position and pause;
-            elbow.setPosition(positionElbow);
+            elbow.setPosition(1-positionElbow);
             claw.setPosition(positionClaw);
 
             sleep(CYCLE_MS); // Pause for 50 milliseconds
